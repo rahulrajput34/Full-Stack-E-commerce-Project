@@ -1,0 +1,29 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Prata&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* if a active that time is display hr which we give inside the Navbar*/
+a.active hr{
+  display: block;
+}
+
+*{
+  font-family: Outfit;
+}
+.prata-regular {
+  font-family: "Prata", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+  ::-webkit-scrollbar{
+    display: none;
+  }
+/* When in the drop down when we click on anything that time it gonna be highlited by below values */
+@media (max-width: 640px){
+  a.active{
+    background-color: black;
+    color: white;
+  }
+}

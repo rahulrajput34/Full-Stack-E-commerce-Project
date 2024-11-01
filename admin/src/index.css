@@ -1,0 +1,22 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+*{
+    font-family: Outfit;
+}
+
+/* When we select the input it will give below outline to  input field */
+select, input, textarea{
+    border: 1px solid #c2c2c2;
+    outline-color: #c586a5;
+    border-radius: 4px;
+}
+
+/* In the navlink when We click on the given element of nav link it will add the classname active into it */
+/* so when active we can give css to it */
+.active{
+    background-color: #ffebf5;
+    border-color: #c586a5;
+}
