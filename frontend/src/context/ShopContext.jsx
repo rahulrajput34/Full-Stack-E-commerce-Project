@@ -10,7 +10,7 @@ export const ShopContext = createContext();
 // creating for get values from
 const ShopContextProvider = (props) => {
   const currency = "$";
-  const deliveryFees = 10;
+  const deliveryFees = 5;
   // For backend URL
   // To show where to fetch
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
@@ -24,7 +24,6 @@ const ShopContextProvider = (props) => {
   // To store the product we got from the backend
   const navigate = useNavigate();
   // console.log(token);
-  
 
   // ***********      ADD TO CART functionality     *****************
   const addToCart = async (itemId, size) => {
@@ -139,7 +138,6 @@ const ShopContextProvider = (props) => {
   const getCartAmount = () => {
     let totalAmount = 0;
     for (const items in cartItems) {
-      // find by id
       let itemInfo = products.find((product) => product._id === items);
       for (const item in cartItems[items]) {
         try {
@@ -153,6 +151,12 @@ const ShopContextProvider = (props) => {
         }
       }
     }
+
+    // Calculate the tax (13% of totalAmount)
+    // const tax = totalAmount * 0.13;
+    // // Add tax to the total amount
+    // totalAmount += tax;
+
     return totalAmount;
   };
 
@@ -179,9 +183,13 @@ const ShopContextProvider = (props) => {
   // To come up with this problem we gonna use the below functionality
   const getUserCart = async (token) => {
     try {
-        const response = await axios.post(backendUrl + "/api/cart/get",{}, {
-        headers: { token },
-      });
+      const response = await axios.post(
+        backendUrl + "/api/cart/get",
+        {},
+        {
+          headers: { token },
+        }
+      );
       // Means we have recieved the cart data
       if (response.data.success) {
         setCartItems(response.data.cartData);
