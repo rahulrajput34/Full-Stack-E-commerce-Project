@@ -151,7 +151,7 @@ const ShopContextProvider = (props) => {
         }
       }
     }
-
+    // TODO: check it again
     // Calculate the tax (13% of totalAmount)
     // const tax = totalAmount * 0.13;
     // // Add tax to the total amount
