@@ -1,39 +1,33 @@
 import { v2 as cloudinary } from 'cloudinary';
 import productModel from '../models/productModel.js';
-// Login of product
-// function for add product
-// to add the product use middle ware multer
+
+/**
+ * Adds a new product to the database.
+ * The product's images are first uploaded to Cloudinary, and the resulting URLs are stored in the database.
+ *
+ * @async
+ * @function addProduct
+ * @param {Object} req - Express request object containing product data and files.
+ * @param {Object} res - Express response object.
+ */
 const addProduct = async (req, res) => {
     try {
-        // req.body refers to an object that contains the data sent by the client 
-        // it is in-build in express
         const { name, description, price, category, subCategory, sizes, bestseller } = req.body;
-        // to get image from file
-        // console.log(req.files);   //Finee to check what user is passing
-        const image1 = req.files.image1 && req.files.image1[0];
-        const image2 = req.files.image2 && req.files.image2[0];
-        const image3 = req.files.image3 && req.files.image3[0];
-        const image4 = req.files.image4 && req.files.image4[0];
 
-        // We need to store this data and images into the database
-        // but in the data base we can not able to store the image 
-        // So first we need to upload these images on the cloudinary 
-        // from cloudinary we got the url and then we can store our data into the data base
-        // if anything undefined in array then remove it
-        const images = [image1, image2, image3, image4].filter((item) => item !== undefined)
+        // Extract images from request files
+        const images = ['image1', 'image2', 'image3', 'image4']
+            .map(key => req.files[key] && req.files[key][0])
+            .filter(image => image !== undefined);
 
-        // This is how we can covert the images to the url format
-        let imagesUrl = await Promise.all(
+        // Upload images to Cloudinary and get their URLs
+        const imagesUrl = await Promise.all(
             images.map(async (image) => {
-                const result = await cloudinary.uploader.upload(image.path, {resource_type:'image'});
+                const result = await cloudinary.uploader.upload(image.path, { resource_type: 'image' });
                 return result.secure_url;
             })
-        )
-        // console.log(imagesUrl);  -- fine
-        
-        // Now we should Store into the database
-        // all the data comes in string from cloudinary
-        // This below code should match the format of the product model
+        );
+
+        // Prepare product data to match the schema
         const productData = {
             name,
             description,
@@ -42,58 +36,78 @@ const addProduct = async (req, res) => {
             category,
             subCategory,
             sizes: JSON.parse(sizes),
-            bestseller: bestseller === "true"? true : false,
-            date: Date.now()
-        }
-        // before adding this to data bace lets do console log
-        // To add the product into the data base we need to import the model
-        const product = new productModel(productData);
-        await product.save(); // to save the product into the data base
-        res.json({ success: true, message: "Product added successfully" });
-        }  catch (error) {
-        res.json({ success: false, message: error.message });   
-    }
-}
+            bestseller: bestseller === "true",
+            date: Date.now(),
+        };
 
-// function for List products
+        // Save product to the database
+        const product = new productModel(productData);
+        await product.save();
+        res.json({ success: true, message: "Product added successfully" });
+    } catch (error) {
+        console.error("Error adding product:", error);
+        res.json({ success: false, message: error.message });
+    }
+};
+
+/**
+ * Lists all products stored in the database.
+ *
+ * @async
+ * @function listProducts
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ */
 const listProducts = async (req, res) => {
     try {
         const products = await productModel.find({});
-        res.json({success:true, products});
-
+        res.json({ success: true, products });
     } catch (error) {
-        res.json({success:false, message: error.message });
+        console.error("Error listing products:", error);
+        res.json({ success: false, message: error.message });
     }
-}
+};
 
-// function for remove product
+/**
+ * Removes a product from the database.
+ *
+ * @async
+ * @function removeProducts
+ * @param {Object} req - Express request object containing the product ID.
+ * @param {Object} res - Express response object.
+ */
 const removeProducts = async (req, res) => {
     try {
         await productModel.findByIdAndDelete(req.body.id);
         res.json({ success: true, message: "Product removed successfully" });
     } catch (error) {
-        res.json({success:false, message: error.message });
+        console.error("Error removing product:", error);
+        res.json({ success: false, message: error.message });
     }
-}
+};
 
-// TODO: the code is fine but the product is not diplaying
-//function for single product info
+/**
+ * Fetches details for a single product.
+ *
+ * @async
+ * @function singleProducts
+ * @param {Object} req - Express request object containing the product ID.
+ * @param {Object} res - Express response object.
+ */
 const singleProducts = async (req, res) => {
     try {
-        const {productId} = req.body;
+        const { productId } = req.body;
         const product = await productModel.findById(productId);
-        res.json({success:true, product});
-
+        res.json({ success: true, product });
     } catch (error) {
-        res.json({success:false, message: error.message });
+        console.error("Error fetching product details:", error);
+        res.json({ success: false, message: error.message });
     }
-}
+};
 
 export {
     addProduct,
     listProducts,
     removeProducts,
     singleProducts
-}
-
-
+};
