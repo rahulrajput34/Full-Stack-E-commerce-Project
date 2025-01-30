@@ -1,201 +1,188 @@
-import { useEffect, useState } from "react";
-import { createContext } from "react";
+import { createContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-// use context api for getting all the value of products from assest.js
+/**
+ * A context that provides state and functionality for managing products and cart items.
+ *
+ * @type {React.Context}
+ */
 export const ShopContext = createContext();
 
-// creating for get values from
+/**
+ * Context provider component that manages product data, cart operations,
+ * and authentication tokens for the application.
+ *
+ * @function ShopContextProvider
+ * @param {Object} props - The component's props.
+ * @returns {JSX.Element} The context provider for the shop.
+ */
 const ShopContextProvider = (props) => {
+  // Global currency and delivery fee configuration
   const currency = "$";
   const deliveryFees = 5;
-  // For backend URL
-  // To show where to fetch
+
+  // Base URL for the backend (from environment variables)
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
-  // For storing the all fetched data
+
+  // State variables
   const [products, setProducts] = useState([]);
-  // Here we set the true so that the by default there is a search bar in our webpage
   const [search, setSearch] = useState("");
   const [showSearch, setShowSearch] = useState(false);
   const [cartItems, setCartItems] = useState({});
   const [token, setToken] = useState("");
-  // To store the product we got from the backend
-  const navigate = useNavigate();
-  // console.log(token);
 
-  // ***********      ADD TO CART functionality     *****************
+  const navigate = useNavigate();
+
+  /**
+   * Adds an item to the cart with the selected size.
+   * Also updates the backend if a user token is available.
+   *
+   * @async
+   * @function addToCart
+   * @param {string} itemId - The item's identifier.
+   * @param {string} size - The size of the item.
+   */
   const addToCart = async (itemId, size) => {
     if (!size) {
       toast.error("Please select a size of product");
       return;
     }
-    // Clone the current cart data to avoid direct mutation
-    let cartData = structuredClone(cartItems);
 
-    // Check if the item already exists in the cart
+    const cartData = structuredClone(cartItems);
+
     if (cartData[itemId]) {
-      // Check if the specific size of the item exists in the cart
-      if (cartData[itemId][size]) {
-        // If it exists, increase the quantity by 1
-        cartData[itemId][size] += 1;
-      } else {
-        // If the size doesn't exist, add the size with quantity 1
-        cartData[itemId][size] = 1;
-      }
+      cartData[itemId][size] = (cartData[itemId][size] || 0) + 1;
     } else {
-      // If the item doesn't exist, create a new entry for the item
-      cartData[itemId] = {};
-      // Add the size with quantity 1
-      cartData[itemId][size] = 1;
+      cartData[itemId] = { [size]: 1 };
     }
-    // Update the cart state with the new data
+
     setCartItems(cartData);
 
-    // Conntect to the backend
-    // If token is available
     if (token) {
-      //console.log(token);     // Just for checkingthe token is working or not
       try {
-        // Send a POST request to add the item to the database
-        // Item id and size are for which Id needed
-        // Token will use this token to verify the user.
-        const response = await axios.post(
-          backendUrl + "/api/cart/add",
+        await axios.post(
+          `${backendUrl}/api/cart/add`,
           { itemId, size },
           { headers: { token } }
         );
-        console.log(response);
-        // If it will added then show the success message
         toast.success("Item added to cart");
       } catch (error) {
-        // if not then error
-        console.log(error);
+        console.error(error);
         toast.error("Failed to add item to cart");
       }
     } else {
-      // Use is not logged in
       toast.info("Please login to add item to cart");
     }
   };
 
-  // *************    Get Cart Count Logic      ****************
-  // When we add the item or remove the item that time the value of count should be change
-  // logic for this is below code
+  /**
+   * Retrieves the total count of items in the cart.
+   *
+   * @function getCartCount
+   * @returns {number} The total quantity of all items in the cart.
+   */
   const getCartCount = () => {
-    // Start with a total count of zero to track the number of items in the cart
     let totalCount = 0;
-
-    // Iterate over each item in the cart
-    for (const items in cartItems) {
-      // For each item, loop through its available sizes
-      for (const item in cartItems[items]) {
-        try {
-          // If the quantity for a specific size is greater than zero, add it to the total count
-          if (cartItems[items][item] > 0) {
-            totalCount += cartItems[items][item];
-          }
-        } catch (error) {
-          // Catch and log any errors that might occur during the counting process
-          console.log(error);
-        }
+    for (const itemId in cartItems) {
+      for (const size in cartItems[itemId]) {
+        totalCount += cartItems[itemId][size] || 0;
       }
     }
-
-    // Return the final total count of all items in the cart
     return totalCount;
   };
 
-  // ***********   Update quntity **********
+  /**
+   * Updates the quantity of a specific cart item.
+   * Also updates the backend if a user token is available.
+   *
+   * @async
+   * @function updateQuantity
+   * @param {string} itemId - The item's identifier.
+   * @param {string} size - The item's size.
+   * @param {number} quantity - The new quantity.
+   */
   const updateQuantity = async (itemId, size, quantity) => {
-    // Clone the current cart data to avoid direct mutation
-    let cartData = structuredClone(cartItems);
-
-    // Update the quantity for the specified item and size
+    const cartData = structuredClone(cartItems);
     cartData[itemId][size] = quantity;
-
-    // Update the cart state with the new data
     setCartItems(cartData);
 
-    // If token is available means we are logged-In
     if (token) {
       try {
-        // Send a POST request to update the quantity in the database
         await axios.post(
-          backendUrl + "/api/cart/update",
+          `${backendUrl}/api/cart/update`,
           { itemId, size, quantity },
           { headers: { token } }
         );
       } catch (error) {
-        console.log(error);
+        console.error(error);
         toast.error("Failed to update quantity");
       }
     }
   };
 
-  // **********    Total amount    ***************
+  /**
+   * Calculates the total amount for all items in the cart.
+   *
+   * @function getCartAmount
+   * @returns {number} The total cost of all cart items.
+   */
   const getCartAmount = () => {
     let totalAmount = 0;
-    for (const items in cartItems) {
-      let itemInfo = products.find((product) => product._id === items);
-      for (const item in cartItems[items]) {
-        try {
-          if (cartItems[items][item] > 0) {
-            let itemPrice = itemInfo.price;
-            let itemQuantity = cartItems[items][item];
-            totalAmount += itemPrice * itemQuantity;
-          }
-        } catch (error) {
-          console.log(error);
+    for (const itemId in cartItems) {
+      const itemData = products.find((product) => product._id === itemId);
+      if (!itemData) continue;
+
+      for (const size in cartItems[itemId]) {
+        const quantity = cartItems[itemId][size];
+        if (quantity > 0) {
+          totalAmount += itemData.price * quantity;
         }
       }
     }
-    // TODO: check it again
-    // Calculate the tax (13% of totalAmount)
-    // const tax = totalAmount * 0.13;
-    // // Add tax to the total amount
-    // totalAmount += tax;
-
     return totalAmount;
   };
 
+  /**
+   * Fetches product data from the backend.
+   *
+   * @async
+   * @function getProductsData
+   */
   const getProductsData = async () => {
     try {
-      // Fetching the product data from the backend (server)
       const response = await axios.get(`${backendUrl}/api/product/list`);
-      // console.log(response.data);  // working fine
-      // console.log(response.data.);
-
       if (response.data.success) {
         setProducts(response.data.products);
       } else {
-        console.log("Error fetching product data");
         toast.error(response.data.message);
       }
     } catch (error) {
-      console.error("Error fetching product data:");
+      console.error("Error fetching product data:", error);
       toast.error(error.message);
     }
   };
 
-  // When we are refreshing the webpage that time the prodcuts inside the cart has been removed
-  // To come up with this problem we gonna use the below functionality
-  const getUserCart = async (token) => {
+  /**
+   * Retrieves the user's cart data from the backend and updates the local cart state.
+   *
+   * @async
+   * @function getUserCart
+   * @param {string} userToken - The user's authentication token.
+   */
+  const getUserCart = async (userToken) => {
     try {
       const response = await axios.post(
-        backendUrl + "/api/cart/get",
+        `${backendUrl}/api/cart/get`,
         {},
-        {
-          headers: { token },
-        }
+        { headers: { token: userToken } }
       );
-      // Means we have recieved the cart data
       if (response.data.success) {
         setCartItems(response.data.cartData);
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
       toast.error("Failed to get cart data");
     }
   };
@@ -204,13 +191,13 @@ const ShopContextProvider = (props) => {
     getProductsData();
   }, []);
 
-  // If the user does not have that token but has it saved localstorage, the app will take that token from the localstorage and use it so that you do not need to login again even if you refresh the webpage
   useEffect(() => {
-    if (!token && localStorage.getItem("token")) {
-      setToken(localStorage.getItem("token"));
-      getUserCart(localStorage.getItem("token"));
+    const savedToken = localStorage.getItem("token");
+    if (!token && savedToken) {
+      setToken(savedToken);
+      getUserCart(savedToken);
     }
-  }, []);
+  }, [token]);
 
   const value = {
     products,
@@ -233,7 +220,9 @@ const ShopContextProvider = (props) => {
   };
 
   return (
-    <ShopContext.Provider value={value}>{props.children}</ShopContext.Provider>
+    <ShopContext.Provider value={value}>
+      {props.children}
+    </ShopContext.Provider>
   );
 };
 
