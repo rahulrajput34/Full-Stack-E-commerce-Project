@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { ShopContext } from "../context/ShopContext";
 import Title from "../components/Title";
 import { assets } from "../assets/assets";
@@ -8,36 +7,32 @@ import CartTotal from "../components/CartTotal";
 const Cart = () => {
   const { products, currency, cartItems, updateQuantity, navigate } =
     useContext(ShopContext);
-  // for store cart data
   const [cartData, setCartData] = useState([]);
 
   useEffect(() => {
     if (products.length > 0) {
-      const tempDate = [];
-      // cartItems are what we are adding by clicking the button
-      for (const items in cartItems) {
-        for (const item in cartItems[items]) {
-          // if we passed the size then it will check for it
-          // if size available so value of cartItems[items][item] > 0  gonna become grater than if we click  button
-          if (cartItems[items][item] > 0) {
-            tempDate.push({
-              _id: items,
-              size: item,
-              quantity: cartItems[items][item],
+      const tempData = [];
+      // Construct an array of selected cart items
+      for (const productId in cartItems) {
+        for (const size in cartItems[productId]) {
+          // Include only items that have been added to the cart
+          if (cartItems[productId][size] > 0) {
+            tempData.push({
+              _id: productId,
+              size: size,
+              quantity: cartItems[productId][size],
             });
           }
         }
       }
-      // console.log(tempDate);
-      setCartData(tempDate);
+      setCartData(tempData);
     }
   }, [cartItems, products]);
 
   return (
     <div className="border-t pt-14">
       <div className="text-2xl mb-3">
-        {/* Title */}
-        <Title text1={"YOUR"} text2={"CART"} />
+        <Title text1="YOUR" text2="CART" />
       </div>
       <div>
         {cartData.map((item, index) => {
@@ -45,7 +40,7 @@ const Cart = () => {
             (product) => product._id === item._id
           );
 
-          // displaying above got products
+          // Display each item in the cart
           return (
             <div
               key={index}
@@ -55,7 +50,7 @@ const Cart = () => {
                 <img
                   className="w-16 sm:w-20"
                   src={productData.images[0]}
-                  alt=""
+                  alt={productData.name}
                 />
                 <div>
                   <p className="text-xs sm:text-lg font-medium">
@@ -72,31 +67,27 @@ const Cart = () => {
                   </div>
                 </div>
               </div>
-              {/* The givein onchange on the input is when we change the quntity after selecting the product so it will change in the bag icon as well */}
-              {/* we manulpate by updateQuantity globle method */}
-              {/* if the value if empty string or 0 its means there is not  product selected and simple pass the null */}
-              {/* if not then we update the quantity */}
               <input
-                onChange={(e) =>
-                  e.target.value === "" || e.target.value === "0"
-                    ? null
-                    : updateQuantity(
-                        item._id,
-                        item.size,
-                        Number(e.target.value)
-                      )
-                }
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value === "" || value === "0") {
+                    // If input is empty or 0, do nothing
+                    return;
+                  }
+                  // Update the quantity in the cart
+                  updateQuantity(item._id, item.size, Number(value));
+                }}
                 className="border max-w-10 sm:max-w-20 px-1 sm:px-2 py-1"
                 type="number"
                 min={1}
                 defaultValue={item.quantity}
               />
-              {/* We have passed 0 as quntity because we want to delete the product */}
+              {/* Remove item from cart */}
               <img
                 onClick={() => updateQuantity(productData._id, item.size, 0)}
                 className="w-4 mr-4 sm:w-5 cursor-pointer"
                 src={assets.bin_icon}
-                alt=""
+                alt="Remove item"
               />
             </div>
           );
