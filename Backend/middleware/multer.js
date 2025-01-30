@@ -1,23 +1,28 @@
-// first the data from user comes here 
-// then the data is validated
-// then the data is stored in the database
-// when user want to access data from database that time it not gonna be used
-import multer from "multer"
+import multer from 'multer';
 
+/**
+ * Multer configuration for handling file uploads.
+ * 
+ * This module sets up storage options and exports a pre-configured instance
+ * of Multer, ready to be used in routes that handle file uploads.
+ */
 
-// Set up how we want to store the uploaded files
+// Define storage strategy for uploaded files
 const storage = multer.diskStorage({
-    // Here, we define how to name the uploaded files
-    filename: function (req, file, callback) {
-        // We’re keeping the original name of the file that the user uploads
+    /**
+     * Specify how filenames should be handled.
+     * 
+     * @param {Object} req - The Express request object.
+     * @param {Object} file - The file object provided by Multer.
+     * @param {Function} callback - Callback function to set the file name.
+     */
+    filename: (req, file, callback) => {
+        // Use the original name of the uploaded file as its stored name
         callback(null, file.originalname);
     }
 });
 
-// Now, we create a Multer instance with our storage settings
-// We’re telling Multer to use the storage settings we just defined
-const upload = multer({
-    storage 
-});
+// Initialize Multer with the defined storage settings
+const upload = multer({ storage });
 
 export default upload;
