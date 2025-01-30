@@ -5,15 +5,17 @@ function Footer() {
   return (
     <div>
       <div className="flex flex-col sm:grid grid-cols-[3fr_1fr_1fr] gap-14 my-10 mt-40 text-sm">
+        {/* Left column: company introduction */}
         <div>
-          <img src={logoo} className="mb-5 w-32" alt="" />
+          <img src={logoo} className="mb-5 w-32" alt="Company Logo" />
           <p className="w-full md:w-2/3 text-gray-600">
-            "Welcome to LuxeHaven, where luxury and style converge to create a
+            Welcome to LuxeHaven, where luxury and style converge to create a
             unique sanctuary for fashion enthusiasts. Discover curated
             collections that embody elegance and comfort, empowering you to
-            express your individuality and make a statement with every outfit."
+            express your individuality and make a statement with every outfit.
           </p>
         </div>
+        {/* Center column: links to company information */}
         <div>
           <p className="text-xl font-medium mb-5">COMPANY</p>
           <ul className="flex flex-col gap-1 text-gray-600">
@@ -23,6 +25,7 @@ function Footer() {
             <li>Privacy policy</li>
           </ul>
         </div>
+        {/* Right column: contact information */}
         <div>
           <p className="text-xl font-medium mb-5">GET IN TOUCH</p>
           <ul className="flex flex-col gap-1 text-gray-600">
@@ -34,7 +37,7 @@ function Footer() {
       <div>
         <hr />
         <p className="py-5 text-sm text-center">
-          Copyright 2024@ RR-Clothing.com - ALL Right Reserverd
+          Copyright 2024@ RR-Clothing.com - ALL Rights Reserved
         </p>
       </div>
     </div>
