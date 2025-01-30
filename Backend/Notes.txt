@@ -1,0 +1,123 @@
+Backend Notes 🚀
+🛠️ Setting Up Your Project
+Initialize npm
+Simply run npm init and follow the prompts.
+
+
+
+Install Required Packages:
+npm install cors dotenv express mongoose bcrypt jsonwebtoken razorpay stripe cloudinary multer nodemon validator joi
+cors - Allows frontend to communicate with backend.
+dotenv - Manages environment variables.
+express - Framework to handle API routes.
+mongoose - Connects and manages MongoDB database.
+bcrypt - Hashes passwords to store them securely.
+jsonwebtoken - Generates tokens for authentication.
+razorpay & stripe - Payment gateway integrations.
+cloudinary - Hosts images on the cloud.
+multer - Handles image uploads.
+nodemon - Automatically restarts the server on code changes.
+validator - Validates user input.
+joi - Schema-based validation for request data.
+🗂️ Folder Structure
+Create a well-organized folder structure. Typically:
+
+
+
+
+
+models/ for database schemas.
+controllers/ for handling logic.
+routes/ for API endpoints.
+config/ for configurations (e.g., cloudinary, database connection).
+middleware/ for custom middleware functions.
+
+
+
+
+🌐 Starting the Server
+Add a script in package.json:
+
+"scripts": {
+  "server": "nodemon server.js"
+}
+Add "type": "module" in package.json to use ES modules (import/export).
+
+Start the server:
+npm run server
+
+
+
+
+🔑 Security and Environment
+Store sensitive data (e.g., database credentials, API keys) in a .env file.
+Use environment variables (via dotenv) to keep these details out of the source code.
+If passwords have special characters, use a URL encoder (%40 for @, etc.).
+
+
+
+🧑‍💻 API Endpoints Flow
+Models:
+Defines the structure of your database entries.
+Example: UserModel for user data, ProductModel for product info.
+Controllers:
+Contains logic for API actions (like adding a product, updating user info).
+Example: A UserController with functions like registerUser() or loginUser().
+Routes:
+Maps endpoints (e.g., /api/user/login) to controller functions.
+Example: UserRoute directs /login to the UserController.loginUser() function.
+Middleware:
+Acts like a checkpoint: validates tokens, checks permissions, or validates input before passing it to the controllers.
+
+
+
+
+🔒 Password Hashing
+What is it?
+Converts a plaintext password into a hashed string.
+🔑 One-way transformation: Impossible to revert back to the original password.
+🧂 Salt: Adds randomness to protect against precomputed attacks.
+Why?
+Even if your database is compromised, the original passwords remain secure.
+
+
+
+
+🔄 How Frontend and Backend Interact
+Frontend sends user input:
+User enters their credentials or other data.
+
+Backend processes the request:
+
+Validates input.
+Checks against the database (e.g., mongoose.findById()).
+If valid, returns a token (or an error message if invalid).
+Frontend receives response:
+
+If successful, the token can be stored (e.g., in local storage).
+Token allows for subsequent requests without re-entering credentials.
+
+
+
+
+🧩 Middleware
+Middleware Definition:
+Middleware functions run before your main logic to handle tasks like validation, authentication, or file uploads.
+
+Example: multer checks uploaded files before they’re saved to the cloud.
+Request Lifecycle Example:
+
+Request: User makes a request.
+Middleware:
+Validates token.
+Checks if user is logged in.
+Validates input fields.
+Controller Logic: Handles the request and interacts with the database.
+Response: Sends data back to the user.
+By following these straightforward steps and principles, you can set up a clean, secure, and well-structured backend project. 🚀
+
+
+
+
+
+
