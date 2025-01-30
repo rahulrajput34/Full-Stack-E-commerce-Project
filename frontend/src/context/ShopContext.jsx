@@ -45,6 +45,11 @@ const ShopContextProvider = (props) => {
    * @param {string} size - The size of the item.
    */
   const addToCart = async (itemId, size) => {
+    if (!token) {
+      toast.info("Please login to add item to cart");
+      return;
+    }
+
     if (!size) {
       toast.error("Please select a size of product");
       return;
@@ -72,8 +77,6 @@ const ShopContextProvider = (props) => {
         console.error(error);
         toast.error("Failed to add item to cart");
       }
-    } else {
-      toast.info("Please login to add item to cart");
     }
   };
 
