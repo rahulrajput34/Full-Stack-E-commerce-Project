@@ -11,7 +11,7 @@ import orderRouter from './routes/orderRoute.js'
 
 // App config
 const app = express()
-const port = process.env.PORT || 5000  // backend will start on this port number
+const port = process.env.PORT || 3000  // backend will start on this port number
 connectDB() || console.log('DB is not connected')
 connectCloudinary() || console.log('Cloudinary is not connected')
 
