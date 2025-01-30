@@ -26,9 +26,9 @@ const Contact = () => {
             Ancaster, ON, CANADA
           </p>
           <p className="text-gray-500">
-            Tel: +1 (416) 555-1234
+            Tel: +1 (365) 833-1736
             <br />
-            Email: rahulrajput@rr.com
+            Email: rajputrahul3424@gmaill.com
           </p>
           <p className="text-gray-600 font-semibold text-xl">
             Careers at LuxeHaven
