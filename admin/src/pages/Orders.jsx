@@ -35,7 +35,6 @@ const Orders = ({ token }) => {
         toast.error(response.data.message);
       }
     } catch (error) {
-      console.eroor(error);
       toast.error(error.message);
     }
   };
