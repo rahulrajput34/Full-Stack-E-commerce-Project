@@ -174,19 +174,37 @@ const ShopContextProvider = (props) => {
    * @function getUserCart
    * @param {string} token - The user's authentication token.
    */
-  const getUserCart = async (token) => {
+  const getUserCart = async (userToken) => {
+    if (!userToken) return;
     try {
       const response = await axios.post(
         `${backendUrl}/api/cart/get`,
         {},
-        { headers: { token } }
+        {
+          headers: {
+            token: userToken, // your current style
+            Authorization: `Bearer ${userToken}`, // covers Bearer-only middleware
+          },
+        }
       );
       if (response.data.success) {
-        setCartItems(response.data.cartData);
+        setCartItems(response.data.cartData || {});
       }
     } catch (error) {
-      console.error(error);
-      toast.error("Failed to get cart data");
+      const msg = error.response?.data?.message || "";
+      if (error.response?.status === 401 && /invalid signature/i.test(msg)) {
+        localStorage.removeItem("token");
+        setToken("");
+        navigate("/login");
+        toast.info("Session expired. Please log in again.");
+        return;
+      }
+      console.error(
+        "cart/get failed:",
+        error.response?.status,
+        error.response?.data || error.message
+      );
+      toast.error(msg || "Failed to get cart data");
     }
   };
 
