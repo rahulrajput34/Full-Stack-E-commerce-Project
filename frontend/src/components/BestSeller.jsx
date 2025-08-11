@@ -3,45 +3,44 @@ import { ShopContext } from "../context/ShopContext";
 import Title from "./Title";
 import ProductItem from "./ProductItem";
 
-/**
- * Displays a grid of best-selling products.
- * 
- * Fetches product data from context, filters items marked as bestsellers,
- * and shows a limited set in a styled grid layout.
- */
 function BestSeller() {
-  const { products } = useContext(ShopContext);
+  const { products = [] } = useContext(ShopContext);
   const [bestSeller, setBestSeller] = useState([]);
 
   useEffect(() => {
-    // Filter products to get those marked as bestsellers
-    const filteredProducts = products.filter((item) => item.bestseller);
-    // Limit the displayed products to the first five
-    setBestSeller(filteredProducts.slice(0, 5));
+    const filtered = products.filter((item) => item.bestseller);
+    setBestSeller(filtered.slice(0, 5));
   }, [products]);
 
   return (
-    <div className="my-10">
-      <div className="text-center text-3xl py-8">
-        <Title text1="BEST" text2="SELLERS" />
-        <p className="w-3/4 m-auto text-xs sm:text-sm md:text-base text-gray-600">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquam
-          dolorum error aspernatur molestiae debitis sed cum eius reiciendis
-          reprehenderit.
-        </p>
+    <section className="py-10 sm:py-12 lg:py-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center space-y-4">
+          <Title text1="BEST" text2="SELLERS" />
+          <p className="mx-auto max-w-2xl text-xs sm:text-sm md:text-base text-gray-600">
+            Customer favorites that fly off the shelves.
+          </p>
+        </div>
+
+        <div className="mt-8 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-5 lg:gap-6">
+          {bestSeller.length ? (
+            bestSeller.map((item, index) => (
+              <ProductItem
+                key={index}
+                id={item._id}
+                image={item.images}
+                name={item.name}
+                price={item.price}
+              />
+            ))
+          ) : (
+            <div className="col-span-full text-center text-gray-500 py-10">
+              No bestsellers to show right now.
+            </div>
+          )}
+        </div>
       </div>
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 gap-y-6">
-        {bestSeller.map((item, index) => (
-          <ProductItem
-            key={index}
-            id={item._id}
-            image={item.images}
-            name={item.name}
-            price={item.price}
-          />
-        ))}
-      </div>
-    </div>
+    </section>
   );
 }
 
