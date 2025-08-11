@@ -97,6 +97,10 @@ function PlaceOrder() {
             const { session_url } = responseStripe.data;
             window.location.replace(session_url);
           } else {
+            console.log(
+              "Error in Stripe payment:",
+              responseStripe.data.message
+            );
             toast.error(responseStripe.data.message);
           }
           break;
