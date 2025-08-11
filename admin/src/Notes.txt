@@ -1,5 +1,0 @@
-=> First added
-axios             -- api call
-react-router-dom  -- router
-react-toastify    -- notification
-
