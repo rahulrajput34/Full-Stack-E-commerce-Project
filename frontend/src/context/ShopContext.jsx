@@ -172,14 +172,14 @@ const ShopContextProvider = (props) => {
    *
    * @async
    * @function getUserCart
-   * @param {string} userToken - The user's authentication token.
+   * @param {string} token - The user's authentication token.
    */
-  const getUserCart = async (userToken) => {
+  const getUserCart = async (token) => {
     try {
       const response = await axios.post(
         `${backendUrl}/api/cart/get`,
         {},
-        { headers: { token: userToken } }
+        { headers: { token } }
       );
       if (response.data.success) {
         setCartItems(response.data.cartData);
