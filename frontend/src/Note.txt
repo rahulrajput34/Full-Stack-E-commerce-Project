@@ -1,4 +1,0 @@
-<!-- installed packages --
- 1. npm install react-router-dom@6
- 2. npm install --save react-toastify
--->
