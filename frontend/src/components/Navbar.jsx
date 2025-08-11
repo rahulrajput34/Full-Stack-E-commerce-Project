@@ -18,7 +18,7 @@ function Navbar() {
   // Handles user logout
   const Logout = () => {
     localStorage.removeItem("token");
-    setToken(null);
+    setToken("");
     setCartItems({});
     navigate("/login");
   };
