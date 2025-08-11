@@ -12,7 +12,7 @@ function Footer() {
   ];
 
   return (
-    <footer className="border-t border-gray-200 bg-white">
+    <footer className="bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Top */}
         <div className="py-14 grid grid-cols-1 md:grid-cols-12 gap-10">
@@ -78,7 +78,7 @@ function Footer() {
         <div className="border-t border-gray-200 py-6">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
             <p className="text-xs sm:text-sm text-gray-500">
-              © {year} RR-Clothing — All rights reserved.
+              © {year} LuxeHaven — All rights reserved.
             </p>
             <div className="flex items-center gap-6 text-xs sm:text-sm">
               <a
